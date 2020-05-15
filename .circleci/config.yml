@@ -1,5 +1,5 @@
 version: 2.1
-job:
+jobs:
   build: 
     working_directory: ~/public
     docker:
@@ -20,7 +20,7 @@ job:
             - ./node_modules
       - run:
         name: test
-        command: npm test
+        command: yarn test
       - store_artifacts:
         path: test-results.xml
         prefix: tests
