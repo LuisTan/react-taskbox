@@ -4,7 +4,7 @@ job:
     working_directory: ~/public
     docker:
      - image: circlecli/node:10.15.3
-    steps"
+    steps:
       - checkout
       - run:
         name: update-npm
@@ -18,7 +18,7 @@ job:
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
             - ./node_modules
-      - run
+      - run:
         name: test
         command: npm test
       - store_artifacts:
