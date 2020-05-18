@@ -24,6 +24,11 @@ jobs:
       - store_artifacts:
           path: storybook-static
       - run:
+          name: Run Coverage
+          command: npm run test --collectCoverage --watchAll
+      - store_artifacts:
+          path: storybook-static
+      - run:
           name: Add GitHub Deployment success status
           command: ./tasks/deployment/end.sh success
           when: on_success
