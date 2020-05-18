@@ -44,5 +44,13 @@
     "@storybook/react": "^5.3.18",
     "react-test-renderer": "^16.13.1",
     "jest": "24.9.0"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "**/*/{js,jsxx}",
+      "!**/node_modules/**",
+      "!**/coverage/**",
+      "!**/src/stories/**"
+    ]
   }
 }

@@ -22,12 +22,12 @@ jobs:
           name: Build Storybook
           command: yarn build-storybook
       - store_artifacts:
-          path: project/storybook-static
+          path: storybook-static
       - run:
           name: Run Coverage
           command: yarn test --collectCoverage
       - store_artifacts:
-          path: project/test-coverage
+          path: coverage
       - run:
           name: Add GitHub Deployment success status
           command: ./tasks/deployment/end.sh success
