@@ -1,34 +1,42 @@
-version: 2.1
+version: 2.0
+
 jobs:
-  build:
-    working_directory: ~/public
+  build-storybook:
+    working_directory: ~/repo
     docker:
-      - image: circleci/node:10.15.3
+      - image: circleci/node:lts
     steps:
       - checkout
       - run:
-          name: update-npm
-          command: "sudo npm install -g npm@latest"
+          name: Create GitHub Deployment
+          command: ./tasks/deployment/start.sh > deployment
       - restore_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
+          keys:
+            - cache-{{ checksum "package.json" }}
+            # fallback to using the latest cache if no exact match is found
+            - cache-
       - run:
-          name: install-npm-wee
+          name: Installing Dependencies
           command: npm install
+      - run:
+          name: Build Storybook
+          command: npm run build-storybook
+      - store_artifacts:
+          path: storybook-static
+      - run:
+          name: Add GitHub Deployment success status
+          command: ./tasks/deployment/end.sh success
+          when: on_success
+      - run:
+          name: Add GitHub Deployment error status
+          command: ./tasks/deployment/end.sh error
+          when: on_fail
       - save_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
           paths:
-            - ./node_modules
-      - run:
-          name: test
-          command: yarn test
-      - run:
-          name: storybook
-          command: yarn storybook
-      - store_artifacts:
-          path: test-results.xml
-          prefix: tests
-      - store_artifacts:
-          path: coverage
-          prefix: coverage
-      - store_test_results:
-          path: test-results.xml
+            - node_modules
+          key: cache-{{ checksum "package.json" }}
+
+workflows:
+  deploy:
+    jobs:
+      - build-storybook
