@@ -1,7 +1,7 @@
 version: 2
 
 jobs:
-  build-storybook:
+  prepare:
     working_directory: ~/repo
     docker:
       - image: circleci/node:lts
@@ -11,42 +11,48 @@ jobs:
           name: Create GitHub Deployment
           command: ./tasks/deployment/start.sh > deployment
       - restore_cache:
-          keys:
-            - cache-{{ checksum "package.json" }}
-            # fallback to using the latest cache if no exact match is found
-            - cache-
+          key: yarn-deps-{{ checksum "yarn.lock" }}
       - run:
           name: Installing Dependencies
-          command: npm install
+          command: yarn --frozen-lockfile
+      - save_cache:
+          paths:
+            - ~/.cache/yarn
+          key: yarn-deps-{{ checksum "yarn.lock" }}
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+            - .circleci
+            - node_modules
+  build-storybook:
+    working_directory: ~/repo
+    steps: 
       - run:
           name: Build Storybook
           command: yarn build-storybook
       - store_artifacts:
           path: storybook-static
+  test:
+    working_directory: ~/repo
+    steps:
       - run:
           name: Run Coverage
           command: yarn test --collectCoverage --watchAll=false
       - store_artifacts:
           path: coverage
       - run:
-          name: Add GitHub Deployment success status
-          command: ./tasks/deployment/end.sh success
-          when: on_success
-      - run:
-          name: Add GitHub Deployment error status
-          command: ./tasks/deployment/end.sh error
-          when: on_fail
-      - run:
           name: Post Stats to GitHub PR
           command: ./tasks/deployment/comment.sh
           when: on_success
-      - save_cache:
-          paths:
-            - node_modules
-          key: cache-{{ checksum "package.json" }}
 
 workflows:
   version: 2
   deploy:
     jobs:
-      - build-storybook
+      - prepare
+      - build-storybook:
+          requires:
+            - prepare
+      - test:
+          requires:
+            - build-storybook
