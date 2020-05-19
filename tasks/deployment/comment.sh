@@ -20,11 +20,11 @@
     echo "No PR found to update"
   else
     pr_comment_url=$(echo $pr_response | jq -r ".[]._links.comments.href")
-  fi
 
-  curl --location --request POST "$pr_comment_url" \
-  -u $github_user:$github_token \
-  --header 'Content-Type: application/json' \
-  --data-raw '{
-  "body": "Link for the Storybook (Active only for 30 days) '${artifacts_url}'/storybook-static/index.html \n Link for the Coverage (Active only for 30 days) '${artifacts_url}'/coverage/lcov-report/src/index.html"
-}'
+    curl --location --request POST "$pr_comment_url" \
+    -u $github_user:$github_token \
+    --header 'Content-Type: application/json' \
+    --data-raw '{
+    "body": "Link for the Storybook (Active only for 30 days) '${artifacts_url}'/storybook-static/index.html \n Link for the Coverage (Active only for 30 days) '${artifacts_url}'/coverage/lcov-report/src/index.html"
+  }'
+  fi
