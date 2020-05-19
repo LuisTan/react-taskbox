@@ -20,9 +20,14 @@ jobs:
           command: npm install
       - run:
           name: Build Storybook
-          command: npm run build-storybook
+          command: yarn build-storybook
       - store_artifacts:
           path: storybook-static
+      - run:
+          name: Run Coverage
+          command: yarn test --collectCoverage --watchAll=false
+      - store_artifacts:
+          path: coverage
       - run:
           name: Add GitHub Deployment success status
           command: ./tasks/deployment/end.sh success
