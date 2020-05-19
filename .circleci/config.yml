@@ -36,6 +36,10 @@ jobs:
           name: Add GitHub Deployment error status
           command: ./tasks/deployment/end.sh error
           when: on_fail
+      - run:
+          name: Post Stats to GitHub PR
+          command: ./tasks/deployment/comment.sh
+          when: on_success
       - save_cache:
           paths:
             - node_modules
