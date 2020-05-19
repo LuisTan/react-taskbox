@@ -25,7 +25,7 @@ jobs:
           path: storybook-static
       - run:
           name: Run Coverage
-          command: yarn test --collectCoverage
+          command: yarn test --collectCoverage --watchAll=false
       - store_artifacts:
           path: coverage
       - run:
