@@ -1,43 +1,29 @@
 version: 2
 
 jobs:
-  prepare:
+  build:
     working_directory: ~/repo
     docker:
       - image: circleci/node:lts
     steps:
       - checkout
-      - run:
-          name: Create GitHub Deployment
-          command: ./tasks/deployment/start.sh > deployment
       - restore_cache:
           key: yarn-deps-{{ checksum "yarn.lock" }}
       - run:
           name: Installing Dependencies
-          command: yarn --frozen-lockfile
+          command: yarn install --frozen-lockfile
       - save_cache:
           paths:
             - ~/.cache/yarn
           key: yarn-deps-{{ checksum "yarn.lock" }}
-      - persist_to_workspace:
-          root: ~/repo
-          paths:
-            - .circleci
-            - node_modules
-  build-storybook:
-    working_directory: ~/repo
-    steps: 
       - run:
           name: Build Storybook
           command: yarn build-storybook
       - store_artifacts:
           path: storybook-static
-  test:
-    working_directory: ~/repo
-    steps:
       - run:
           name: Run Coverage
-          command: yarn test --collectCoverage --watchAll=false
+          command: yarn test --collectCoverage
       - store_artifacts:
           path: coverage
       - run:
@@ -49,10 +35,4 @@ workflows:
   version: 2
   deploy:
     jobs:
-      - prepare
-      - build-storybook:
-          requires:
-            - prepare
-      - test:
-          requires:
-            - build-storybook
+      - build
