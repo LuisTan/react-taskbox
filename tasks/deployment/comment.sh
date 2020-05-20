@@ -33,7 +33,8 @@ if [ $(echo $pr_response | jq length) -eq 0 ]; then
   echo "No PR found to update"
 else
   pr_comment_url=$(echo $pr_response | jq -r ".[]._links.comments.href")
-  
+  echo ${pr_response}
+  echo "pr comment url"
   echo ${pr_comment_url}
 
     curl --location --request POST "$pr_comment_url" \

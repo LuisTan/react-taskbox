@@ -22,11 +22,6 @@ jobs:
       - store_artifacts:
           path: storybook-static
       - run:
-          name: Run Coverage
-          command: yarn test --collectCoverage
-      - store_artifacts:
-          path: coverage
-      - run:
           name: Post Stats to GitHub PR
           command: ./tasks/deployment/comment.sh
           when: on_success
